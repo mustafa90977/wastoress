@@ -1,0 +1,263 @@
+{
+  "name": "WhatsApp Order Processor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.body;\nconst message = body.body || body.message || '';\nconst from = body.from || body.sender || '';\n\nconst match = message.match(/^order[-: ](.+)/i);\n\nif (!match) {\n  return [{ sku: null, customer_phone: from, raw: message }];\n}\n\nreturn [{\n  sku: match[1].trim(),\n  customer_phone: from,\n  raw: message\n}];"
+      },
+      "name": "Parse SKU",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.sku }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "name": "Has SKU?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، لم يتم التعرف على كود المنتج.\\n\\nالرجاء استخدام زر \"اطلب دلوقتي\" من الكتالوج:\\n' + $env.CATALOG_URL\n}];"
+      },
+      "name": "Invalid Message Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 100]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/products?sku=eq.{{ $json.sku }}&select=*",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Lookup Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Product Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 5).toUpperCase();\nconst product = $input.all()[0].json[0];\nconst skuData = $input.all()[1].json;\n\nreturn [{\n  order_number: orderNumber,\n  customer_phone: skuData.customer_phone,\n  product_id: product.id,\n  product_name_snapshot: product.name,\n  price_snapshot: product.price,\n  status: 'pending',\n  payment_method: 'cash',\n  sku: skuData.sku\n}];"
+      },
+      "name": "Generate Order",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/orders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "order_number",
+              "value": "={{ $json.order_number }}"
+            },
+            {
+              "name": "customer_phone",
+              "value": "={{ $json.customer_phone }}"
+            },
+            {
+              "name": "product_id",
+              "value": "={{ $json.product_id }}"
+            },
+            {
+              "name": "product_name_snapshot",
+              "value": "={{ $json.product_name_snapshot }}"
+            },
+            {
+              "name": "price_snapshot",
+              "value": "={{ $json.price_snapshot }}"
+            },
+            {
+              "name": "status",
+              "value": "={{ $json.status }}"
+            },
+            {
+              "name": "payment_method",
+              "value": "={{ $json.payment_method }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Insert Order in Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1450, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const order = $input.all()[0].json;\n\nconst formattedPrice = Number(order.price_snapshot).toLocaleString('ar-EG');\n\nconst message = `✅ تم استلام طلبك بنجاح!\n\n📋 رقم الطلب: ${order.order_number}\n🛒 المنتج: ${order.product_name_snapshot}\n💰 السعر: ${formattedPrice} ج.م\n\n💳 للدفع الإلكتروني: ${$env.PAYMENT_URL || 'سيتم التواصل'}\n🚚 الدفع عند الاستلام متاح\n\nهنتواصل معاك قريبًا لتأكيد العنوان وموعد التوصيل.\nشكرًا لطلبك! 🙏`;\n\nreturn [{\n  to: order.customer_phone,\n  message: message\n}];"
+      },
+      "name": "Build Confirmation Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، المنتج المطلوب غير متوفر حاليًا.\\n\\nبرجاء مراجعة الكتالوج لدينا:\\n' + $env.CATALOG_URL\n}];"
+      },
+      "name": "Product Not Found Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.WAPOLIT_API_URL }}/send-message",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.WAPOLIT_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.to }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send via Wapolit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Parse SKU", "type": "main", "index": 0 }]]
+    },
+    "Parse SKU": {
+      "main": [[{ "node": "Has SKU?", "type": "main", "index": 0 }]]
+    },
+    "Has SKU?": {
+      "main": [
+        [{ "node": "Lookup Product", "type": "main", "index": 0 }],
+        [{ "node": "Invalid Message Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Lookup Product": {
+      "main": [[{ "node": "Product Found?", "type": "main", "index": 0 }]]
+    },
+    "Product Found?": {
+      "main": [
+        [{ "node": "Generate Order", "type": "main", "index": 0 }],
+        [{ "node": "Product Not Found Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Generate Order": {
+      "main": [[{ "node": "Insert Order in Supabase", "type": "main", "index": 0 }]]
+    },
+    "Insert Order in Supabase": {
+      "main": [[{ "node": "Build Confirmation Message", "type": "main", "index": 0 }]]
+    },
+    "Build Confirmation Message": {
+      "main": [[{ "node": "Send via Wapolit", "type": "main", "index": 0 }]]
+    },
+    "Invalid Message Response": {
+      "main": [[{ "node": "Send via Wapolit", "type": "main", "index": 0 }]]
+    },
+    "Product Not Found Response": {
+      "main": [[{ "node": "Send via Wapolit", "type": "main", "index": 0 }]]
+    }
+  }
+}
