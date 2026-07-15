@@ -51,6 +51,12 @@ export interface StoreData {
   socialInstagram: string;
   socialTiktok: string;
   socialX: string;
+
+  wapolitApiKey: string;
+  wapolitDeviceId: string;
+  n8nWebhookUrl: string;
+  n8nWebhookSecret: string;
+  paymentUrl: string;
 }
 
 const defaults: StoreData = {
@@ -113,6 +119,12 @@ const defaults: StoreData = {
   socialInstagram: "#",
   socialTiktok: "#",
   socialX: "#",
+
+  wapolitApiKey: "",
+  wapolitDeviceId: "",
+  n8nWebhookUrl: "",
+  n8nWebhookSecret: "",
+  paymentUrl: "https://pay.example.com",
 };
 
 export async function getSettings(): Promise<StoreData> {
@@ -172,6 +184,12 @@ export async function getSettings(): Promise<StoreData> {
     socialInstagram: map.social_instagram ?? defaults.socialInstagram,
     socialTiktok: map.social_tiktok ?? defaults.socialTiktok,
     socialX: map.social_x ?? defaults.socialX,
+
+    wapolitApiKey: map.wapolit_api_key ?? defaults.wapolitApiKey,
+    wapolitDeviceId: map.wapolit_device_id ?? defaults.wapolitDeviceId,
+    n8nWebhookUrl: map.n8n_webhook_url ?? defaults.n8nWebhookUrl,
+    n8nWebhookSecret: map.n8n_webhook_secret ?? defaults.n8nWebhookSecret,
+    paymentUrl: map.payment_url ?? defaults.paymentUrl,
   };
 }
 

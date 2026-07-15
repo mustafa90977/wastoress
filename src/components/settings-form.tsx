@@ -16,6 +16,7 @@ const TABS = [
   { id: "footer", label: "التذييل" },
   { id: "whatsapp", label: "واتساب" },
   { id: "social", label: "التواصل" },
+  { id: "integrations", label: "التكاملات" },
 ];
 
 interface CatItem { name: string; icon: string }
@@ -140,6 +141,7 @@ export default function SettingsForm() {
         {tab === "footer" && <FooterTab values={values} setVal={setVal} />}
         {tab === "whatsapp" && <WhatsAppTab values={values} setVal={setVal} />}
         {tab === "social" && <SocialTab values={values} setVal={setVal} />}
+        {tab === "integrations" && <IntegrationsTab values={values} setVal={setVal} />}
       </div>
 
       {error && (
@@ -442,6 +444,50 @@ function SocialTab({ values, setVal }: { values: Record<string, string>; setVal:
       <Field label="رابط انستجرام" value={values.social_instagram ?? ""} onChange={(v) => setVal("social_instagram", v)} dir="ltr" icon="public" />
       <Field label="رابط تيك توك" value={values.social_tiktok ?? ""} onChange={(v) => setVal("social_tiktok", v)} dir="ltr" icon="camera_alt" />
       <Field label="رابط X (تويتر)" value={values.social_x ?? ""} onChange={(v) => setVal("social_x", v)} dir="ltr" icon="alternate_email" />
+    </div>
+  );
+}
+
+function IntegrationsTab({ values, setVal }: { values: Record<string, string>; setVal: (k: string, v: string) => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl bg-primary/5 border border-primary/10 p-6 space-y-4">
+        <h3 className="font-bold text-gray-800 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary">hub</span>
+          n8n
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="رابط Webhook n8n" value={values.n8n_webhook_url ?? ""} onChange={(v) => setVal("n8n_webhook_url", v)} dir="ltr" icon="link" />
+          <Field label="التوكن السري (n8n → المتجر)" value={values.n8n_webhook_secret ?? ""} onChange={(v) => setVal("n8n_webhook_secret", v)} dir="ltr" icon="key" />
+        </div>
+        {values.n8n_webhook_url && (
+          <p className="text-xs text-gray-400">
+            <span className="font-bold">رابط Webhook المتجر (ضيفه في n8n):</span>
+            <br />
+            <code dir="ltr" className="text-primary">{typeof window !== "undefined" ? window.location.origin : "https://wastoress.vercel.app"}/api/webhook/n8n</code>
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-xl bg-primary/5 border border-primary/10 p-6 space-y-4">
+        <h3 className="font-bold text-gray-800 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary">chat</span>
+          Wapolit
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="مفتاح API" value={values.wapolit_api_key ?? ""} onChange={(v) => setVal("wapolit_api_key", v)} dir="ltr" icon="vpn_key" />
+          <Field label="معرف الجهاز (Device ID)" value={values.wapolit_device_id ?? ""} onChange={(v) => setVal("wapolit_device_id", v)} dir="ltr" icon="devices" />
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-primary/5 border border-primary/10 p-6 space-y-4">
+        <h3 className="font-bold text-gray-800 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary">payments</span>
+          الدفع الإلكتروني
+        </h3>
+        <Field label="رابط الدفع الأساسي" value={values.payment_url ?? ""} onChange={(v) => setVal("payment_url", v)} dir="ltr" icon="link" />
+        <p className="text-xs text-gray-400">يستخدم كقاعدة لروابط الدفع: {values.payment_url || "https://pay.example.com"}/order-xxxx</p>
+      </div>
     </div>
   );
 }
