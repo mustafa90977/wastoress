@@ -38,7 +38,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، لم يتم التعرف على كود المنتج.\\n\\nالرجاء استخدام زر \"اطلب دلوقتي\" من الكتالوج:\\n' + $env.CATALOG_URL\n}];"
+        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، لم يتم التعرف على كود المنتج.\\n\\nالرجاء استخدام زر \"اطلب دلوقتي\" من الكتالوج:\\n' + https://wastoress.vercel.app\n}];"
       },
       "name": "Invalid Message Response",
       "type": "n8n-nodes-base.code",
@@ -48,7 +48,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/products?sku=eq.{{ $json.sku }}&select=*",
+        "url": "={{ https://gowoypdomlqivsfidlij.supabase.co }}/rest/v1/products?sku=eq.{{ $json.sku }}&select=*",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -56,11 +56,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+              "value": "={{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdvd295cGRvbWxxaXZzZmlkbGlqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDAyNjMxOSwiZXhwIjoyMDk5NjAyMzE5fQ.0d1hERYdZ-Cy_Xd5lhl8DRAG2ZwmZhaCSION7-zcUsk }}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+              "value": "=Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdvd295cGRvbWxxaXZzZmlkbGlqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDAyNjMxOSwiZXhwIjoyMDk5NjAyMzE5fQ.0d1hERYdZ-Cy_Xd5lhl8DRAG2ZwmZhaCSION7-zcUsk }}"
             }
           ]
         },
@@ -100,7 +100,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/orders",
+        "url": "={{ https://gowoypdomlqivsfidlij.supabase.co }}/rest/v1/orders",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -108,11 +108,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+              "value": "={{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdvd295cGRvbWxxaXZzZmlkbGlqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDAyNjMxOSwiZXhwIjoyMDk5NjAyMzE5fQ.0d1hERYdZ-Cy_Xd5lhl8DRAG2ZwmZhaCSION7-zcUsk }}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+              "value": "=Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdvd295cGRvbWxxaXZzZmlkbGlqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDAyNjMxOSwiZXhwIjoyMDk5NjAyMzE5fQ.0d1hERYdZ-Cy_Xd5lhl8DRAG2ZwmZhaCSION7-zcUsk }}"
             },
             {
               "name": "Content-Type",
@@ -166,7 +166,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const order = $input.all()[0].json;\n\nconst formattedPrice = Number(order.price_snapshot).toLocaleString('ar-EG');\n\nconst message = `✅ تم استلام طلبك بنجاح!\n\n📋 رقم الطلب: ${order.order_number}\n🛒 المنتج: ${order.product_name_snapshot}\n💰 السعر: ${formattedPrice} ج.م\n\n💳 للدفع الإلكتروني: ${$env.PAYMENT_URL || 'سيتم التواصل'}\n🚚 الدفع عند الاستلام متاح\n\nهنتواصل معاك قريبًا لتأكيد العنوان وموعد التوصيل.\nشكرًا لطلبك! 🙏`;\n\nreturn [{\n  to: order.customer_phone,\n  message: message\n}];"
+        "jsCode": "const order = $input.all()[0].json;\n\nconst formattedPrice = Number(order.price_snapshot).toLocaleString('ar-EG');\n\nconst message = `✅ تم استلام طلبك بنجاح!\n\n📋 رقم الطلب: ${order.order_number}\n🛒 المنتج: ${order.product_name_snapshot}\n💰 السعر: ${formattedPrice} ج.م\n\n💳 للدفع الإلكتروني: ${https://pay.example.com || 'سيتم التواصل'}\n🚚 الدفع عند الاستلام متاح\n\nهنتواصل معاك قريبًا لتأكيد العنوان وموعد التوصيل.\nشكرًا لطلبك! 🙏`;\n\nreturn [{\n  to: order.customer_phone,\n  message: message\n}];"
       },
       "name": "Build Confirmation Message",
       "type": "n8n-nodes-base.code",
@@ -175,7 +175,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، المنتج المطلوب غير متوفر حاليًا.\\n\\nبرجاء مراجعة الكتالوج لدينا:\\n' + $env.CATALOG_URL\n}];"
+        "jsCode": "return [{\n  to: $json.customer_phone,\n  message: 'عذرًا، المنتج المطلوب غير متوفر حاليًا.\\n\\nبرجاء مراجعة الكتالوج لدينا:\\n' + https://wastoress.vercel.app\n}];"
       },
       "name": "Product Not Found Response",
       "type": "n8n-nodes-base.code",
@@ -185,7 +185,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.WAPOLIT_API_URL }}/send-message",
+        "url": "={{ https://api.wapolit.com }}/send-message",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -193,7 +193,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.WAPOLIT_API_KEY }}"
+              "value": "=Bearer {{ F6jZ4AK7zKWUgv2wIG8uKjrXp8nyYJa5UbMLU9xmDy }}"
             },
             {
               "name": "Content-Type",
