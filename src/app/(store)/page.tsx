@@ -26,8 +26,7 @@ export default async function CatalogPage() {
   const storePhone = process.env.NEXT_PUBLIC_STORE_PHONE || settings.phone;
 
   return (
-    <main className="space-y-16 md:space-y-20 pb-24 md:pb-8"
-      style={{ paddingTop: settings.announcementEnabled ? "calc(4.75rem + 2.75rem)" : "4.75rem" }}>
+    <main className="space-y-16 md:space-y-20 pb-24 md:pb-8">
       <HeroSection
         title={settings.heroTitle}
         subtitle={settings.heroSubtitle}

@@ -1,5 +1,5 @@
 import { getSettings } from "@/lib/store";
-import AnnouncementBar from "@/components/announcement-bar";
+import StoreTopbar from "@/components/store-topbar";
 
 function FloatingWhatsApp({ phone, enabled }: { phone: string; enabled: boolean }) {
   if (!enabled) return null;
@@ -26,62 +26,21 @@ export default async function StoreLayout({
 }) {
   const settings = await getSettings();
   const envPhone = process.env.NEXT_PUBLIC_STORE_PHONE || "";
+  const phone = envPhone || settings.phone;
 
   return (
     <>
-      {settings.announcementEnabled && (
-        <AnnouncementBar text={settings.announcementText} />
-      )}
-      <StickyHeader settings={settings} />
+      <StoreTopbar
+        storeName={settings.storeName}
+        phone={phone}
+        announcementText={settings.announcementText}
+        announcementEnabled={settings.announcementEnabled}
+      />
       {children}
       <SiteFooter settings={settings} />
-      <FloatingWhatsApp phone={envPhone || settings.phone} enabled={settings.whatsappFloatEnabled} />
+      <FloatingWhatsApp phone={phone} enabled={settings.whatsappFloatEnabled} />
       <BottomNav />
     </>
-  );
-}
-
-function StickyHeader({ settings }: { settings: Awaited<ReturnType<typeof getSettings>> }) {
-  return (
-    <header className="fixed top-0 w-full z-50 bg-surface/80 glass-effect shadow-sm border-b border-outline-variant/30"
-      style={{ marginTop: settings.announcementEnabled ? "2.75rem" : "0" }}>
-      <div className="max-w-[1400px] mx-auto px-4 md:px-12 flex items-center justify-between h-20 gap-8">
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
-          <h1 className="text-[28px] font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>{settings.storeName}</h1>
-        </div>
-
-        <nav className="hidden lg:flex items-center gap-6">
-          <a className="text-primary font-bold border-b-2 border-primary pb-1" href="/">الرئيسية</a>
-        </nav>
-
-        <div className="flex-grow max-w-md hidden md:flex items-center relative group">
-          <span className="material-symbols-outlined absolute right-4 text-on-surface-variant transition-colors group-focus-within:text-primary">search</span>
-          <input
-            className="w-full pr-12 pl-4 py-2.5 bg-surface-container-low border border-outline-variant rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm"
-            placeholder="ابحث عن منتجك المفضل..."
-            type="text"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 md:gap-4 shrink-0">
-          <button className="p-2.5 hover:bg-primary-container/10 rounded-lg transition-all duration-300 active:scale-95 text-on-surface-variant">
-            <span className="material-symbols-outlined">person</span>
-          </button>
-          <button className="p-2.5 hover:bg-primary-container/10 rounded-lg transition-all duration-300 active:scale-95 text-on-surface-variant relative">
-            <span className="material-symbols-outlined">shopping_cart</span>
-          </button>
-          <a
-            href={`https://wa.me/${(process.env.NEXT_PUBLIC_STORE_PHONE || settings.phone).replace(/[^0-9]/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 rounded-lg transition-all duration-300 active:scale-95"
-          >
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>chat</span>
-          </a>
-        </div>
-      </div>
-    </header>
   );
 }
 
