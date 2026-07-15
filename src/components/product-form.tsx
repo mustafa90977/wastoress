@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { Product } from "@/types/database";
 import { Save } from "lucide-react";
+
+function pad(n: number): string {
+  return String(n).padStart(3, "0");
+}
 
 interface Props {
   initialData?: Product;
@@ -17,6 +21,37 @@ export default function ProductForm({ initialData }: Props) {
 
   const [name, setName] = useState(initialData?.name || "");
   const [sku, setSku] = useState(initialData?.sku || "");
+  const [skuLoading, setSkuLoading] = useState(!isEdit);
+
+  useEffect(() => {
+    if (isEdit) return;
+    let cancelled = false;
+
+    async function generateSku() {
+      const { data } = await supabase
+        .from("products")
+        .select("sku")
+        .like("sku", "PRD-%")
+        .order("sku", { ascending: false })
+        .limit(1);
+
+      let nextNum = 1;
+      if (data && data.length > 0) {
+        const match = data[0].sku.match(/PRD-(\d+)/);
+        if (match) {
+          nextNum = parseInt(match[1], 10) + 1;
+        }
+      }
+
+      if (!cancelled) {
+        setSku(`PRD-${pad(nextNum)}`);
+        setSkuLoading(false);
+      }
+    }
+
+    generateSku();
+    return () => { cancelled = true; };
+  }, [isEdit, supabase]);
   const [description, setDescription] = useState(
     initialData?.description || ""
   );
@@ -131,14 +166,25 @@ export default function ProductForm({ initialData }: Props) {
           <label className="mb-1 block text-sm font-medium text-gray-700">
             كود المنتج (SKU) <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            required
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-            placeholder="مثال: IPHONE-13"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              required
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              disabled={!isEdit || skuLoading}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+              dir="ltr"
+            />
+            {skuLoading && (
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                جاري التوليد...
+              </span>
+            )}
+          </div>
+          {!isEdit && (
+            <p className="mt-1 text-xs text-gray-400">يتم توليد الكود تلقائيًا</p>
+          )}
         </div>
 
         <div>
@@ -206,15 +252,17 @@ export default function ProductForm({ initialData }: Props) {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || skuLoading}
         className="flex w-fit items-center gap-2 rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-50"
       >
         <Save className="h-4 w-4" />
-        {loading
-          ? "جاري الحفظ..."
-          : isEdit
-            ? "حفظ التعديلات"
-            : "إضافة المنتج"}
+        {skuLoading
+          ? "جاري التحميل..."
+          : loading
+            ? "جاري الحفظ..."
+            : isEdit
+              ? "حفظ التعديلات"
+              : "إضافة المنتج"}
       </button>
     </form>
   );
