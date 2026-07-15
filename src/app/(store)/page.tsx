@@ -26,10 +26,14 @@ export default async function CatalogPage() {
   const storePhone = process.env.NEXT_PUBLIC_STORE_PHONE || settings.phone;
 
   return (
-    <main className="pt-20 space-y-16 md:space-y-20 pb-24 md:pb-8">
+    <main className="space-y-16 md:space-y-20 pb-24 md:pb-8"
+      style={{ paddingTop: settings.announcementEnabled ? "calc(4.75rem + 2.75rem)" : "4.75rem" }}>
       <HeroSection
         title={settings.heroTitle}
         subtitle={settings.heroSubtitle}
+        cta={settings.heroCta}
+        badge={settings.heroBadge}
+        image={settings.heroImage}
         phone={storePhone}
       />
 
@@ -39,7 +43,7 @@ export default async function CatalogPage() {
 
       <section id="products" className="max-w-[1400px] mx-auto px-4 md:px-12">
         <div className="flex items-center justify-between mb-10">
-          <h3 className="text-3xl font-bold text-on-surface" style={{ fontFamily: "var(--font-display)" }}>وصل حديثاً</h3>
+          <h3 className="text-3xl font-bold text-on-surface" style={{ fontFamily: "var(--font-display)" }}>{settings.sectionProductsTitle}</h3>
           <div className="flex gap-2">
             <button className="p-2 border border-outline-variant rounded-lg hover:bg-primary/10 transition-colors">
               <span className="material-symbols-outlined">filter_list</span>
@@ -69,13 +73,30 @@ export default async function CatalogPage() {
         )}
       </section>
 
-      <OfferBanner />
-
-      {products && products.length > 0 && (
-        <BestSellers products={products} storePhone={storePhone} />
+      {settings.offerBannerEnabled && (
+        <OfferBanner
+          badge={settings.offerBannerBadge}
+          title={settings.offerBannerTitle}
+          subtitle={settings.offerBannerSubtitle}
+          cta={settings.offerBannerCta}
+          image={settings.offerBannerImage}
+        />
       )}
 
-      <TestimonialsSection testimonials={settings.testimonials} />
+      {products && products.length > 0 && (
+        <BestSellers
+          products={products}
+          storePhone={storePhone}
+          title={settings.bestSellersTitle}
+          count={settings.bestSellersCount}
+        />
+      )}
+
+      <TestimonialsSection
+        testimonials={settings.testimonials}
+        title={settings.testimonialsTitle}
+        subtitle={settings.testimonialsSubtitle}
+      />
     </main>
   );
 }

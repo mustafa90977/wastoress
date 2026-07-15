@@ -1,6 +1,8 @@
 import { getSettings } from "@/lib/store";
+import AnnouncementBar from "@/components/announcement-bar";
 
-function FloatingWhatsApp({ phone }: { phone: string }) {
+function FloatingWhatsApp({ phone, enabled }: { phone: string; enabled: boolean }) {
+  if (!enabled) return null;
   const url = phone ? `https://wa.me/${phone.replace(/[^0-9]/g, "")}` : "#";
   return (
     <a
@@ -27,10 +29,13 @@ export default async function StoreLayout({
 
   return (
     <>
+      {settings.announcementEnabled && (
+        <AnnouncementBar text={settings.announcementText} />
+      )}
       <StickyHeader settings={settings} />
       {children}
       <SiteFooter settings={settings} />
-      <FloatingWhatsApp phone={envPhone || settings.phone} />
+      <FloatingWhatsApp phone={envPhone || settings.phone} enabled={settings.whatsappFloatEnabled} />
       <BottomNav />
     </>
   );
@@ -38,7 +43,8 @@ export default async function StoreLayout({
 
 function StickyHeader({ settings }: { settings: Awaited<ReturnType<typeof getSettings>> }) {
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface/80 glass-effect shadow-sm border-b border-outline-variant/30">
+    <header className="fixed top-0 w-full z-50 bg-surface/80 glass-effect shadow-sm border-b border-outline-variant/30"
+      style={{ marginTop: settings.announcementEnabled ? "2.75rem" : "0" }}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 flex items-center justify-between h-20 gap-8">
         <div className="flex items-center gap-3 shrink-0">
           <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
@@ -88,17 +94,28 @@ function SiteFooter({ settings }: { settings: Awaited<ReturnType<typeof getSetti
             <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
             <h2 className="text-3xl font-black text-primary" style={{ fontFamily: "var(--font-display)" }}>{settings.storeName}</h2>
           </div>
-          <p className="text-on-secondary-container max-w-sm">{settings.aboutText}</p>
+          <p className="text-on-secondary-container max-w-sm">{settings.footerDescription}</p>
           <div className="flex gap-4">
-            <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href="#">
-              <span className="material-symbols-outlined">chat</span>
-            </a>
-            <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href="#">
-              <span className="material-symbols-outlined">public</span>
-            </a>
-            <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href="#">
-              <span className="material-symbols-outlined">camera_alt</span>
-            </a>
+            {settings.socialFacebook !== "#" && (
+              <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href={settings.socialFacebook} target="_blank" rel="noopener noreferrer">
+                <span className="material-symbols-outlined">chat</span>
+              </a>
+            )}
+            {settings.socialInstagram !== "#" && (
+              <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href={settings.socialInstagram} target="_blank" rel="noopener noreferrer">
+                <span className="material-symbols-outlined">public</span>
+              </a>
+            )}
+            {settings.socialTiktok !== "#" && (
+              <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href={settings.socialTiktok} target="_blank" rel="noopener noreferrer">
+                <span className="material-symbols-outlined">camera_alt</span>
+              </a>
+            )}
+            {settings.socialX !== "#" && (
+              <a className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all duration-300" href={settings.socialX} target="_blank" rel="noopener noreferrer">
+                <span className="material-symbols-outlined">alternate_email</span>
+              </a>
+            )}
           </div>
         </div>
         <div className="space-y-6">

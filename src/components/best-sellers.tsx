@@ -3,16 +3,18 @@ import type { Product } from "@/types/database";
 interface Props {
   products: Product[];
   storePhone: string;
+  title: string;
+  count: number;
 }
 
-export default function BestSellers({ products, storePhone }: Props) {
-  const top = products.slice(0, 4);
+export default function BestSellers({ products, storePhone, title, count }: Props) {
+  const top = products.slice(0, count);
   if (top.length === 0) return null;
 
   return (
     <section className="max-w-[1400px] mx-auto px-4 md:px-12">
       <div className="flex items-center justify-between mb-10">
-        <h3 className="text-3xl font-bold text-on-surface" style={{ fontFamily: "var(--font-display)" }}>الأكثر مبيعاً</h3>
+        <h3 className="text-3xl font-bold text-on-surface" style={{ fontFamily: "var(--font-display)" }}>{title}</h3>
         <div className="flex gap-4">
           <button className="w-12 h-12 flex items-center justify-center border border-outline-variant rounded-full hover:bg-primary hover:text-on-primary transition-all duration-300">
             <span className="material-symbols-outlined">arrow_forward</span>

@@ -1,0 +1,27 @@
+-- Add new store settings keys
+INSERT INTO store_settings (key, value) VALUES
+  ('announcement_text', '🔥 توصيل مجاني لكل الطلبات! 🎉'),
+  ('announcement_enabled', 'true'),
+  ('hero_cta', 'ابدأ التسوق'),
+  ('hero_badge', 'تسوق آمن وموثوق'),
+  ('hero_image', 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&q=80'),
+  ('section_products_title', 'وصل حديثاً'),
+  ('offer_banner_enabled', 'true'),
+  ('offer_banner_badge', 'عروض نهاية العام'),
+  ('offer_banner_title', 'خصومات تصل إلى 60% على جميع العطور'),
+  ('offer_banner_subtitle', 'اكتشف مجموعتنا الحصرية من الروائح الشرقية والفرنسية بأسعار لا تقبل المنافسة.'),
+  ('offer_banner_cta', 'تسوق العروض الآن'),
+  ('offer_banner_image', 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&q=80'),
+  ('best_sellers_title', 'الأكثر مبيعاً'),
+  ('best_sellers_count', '4'),
+  ('testimonials_title', 'ماذا يقول عملاؤنا'),
+  ('testimonials_subtitle', 'نعتز بثقتكم ونسعى دائماً لتقديم أفضل تجربة تسوق ممكنة'),
+  ('footer_description', 'نحن نوفر لك أرقى المنتجات العالمية بلمسة عربية أصيلة. تجربة تسوق استثنائية تبدأ من هنا.'),
+  ('social_facebook', '#'),
+  ('social_instagram', '#'),
+  ('social_tiktok', '#'),
+  ('social_x', '#'),
+  ('whatsapp_message', 'مرحباً، أود الاستفسار عن'),
+  ('whatsapp_button_text', 'طلب عبر واتساب'),
+  ('whatsapp_float_enabled', 'true')
+ON CONFLICT (key) DO NOTHING;

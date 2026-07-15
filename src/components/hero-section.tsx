@@ -1,10 +1,13 @@
 interface Props {
   title: string;
   subtitle: string;
+  cta: string;
+  badge: string;
+  image: string;
   phone: string;
 }
 
-export default function HeroSection({ title, subtitle, phone }: Props) {
+export default function HeroSection({ title, subtitle, cta, badge, image, phone }: Props) {
   const whatsappUrl = phone
     ? `https://wa.me/${phone.replace(/[^0-9]/g, "")}`
     : "#";
@@ -15,7 +18,7 @@ export default function HeroSection({ title, subtitle, phone }: Props) {
         <div className="z-10 space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
             <span className="material-symbols-outlined text-[18px]">verified</span>
-            <span>تسوق آمن وموثوق</span>
+            <span>{badge}</span>
           </div>
           <h2
             className="text-4xl md:text-5xl font-bold text-on-primary-container leading-tight"
@@ -31,7 +34,7 @@ export default function HeroSection({ title, subtitle, phone }: Props) {
               href="#products"
               className="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-lg"
             >
-              <span>ابدأ التسوق</span>
+              <span>{cta}</span>
               <span className="material-symbols-outlined">arrow_back</span>
             </a>
             <a
@@ -50,7 +53,7 @@ export default function HeroSection({ title, subtitle, phone }: Props) {
           <div
             className="relative w-full h-full rounded-[24px] bg-cover bg-center shadow-2xl transition-transform duration-700 group-hover:scale-[1.03]"
             style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&q=80')",
+              backgroundImage: `url('${image}')`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}

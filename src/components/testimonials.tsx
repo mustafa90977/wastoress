@@ -2,9 +2,11 @@ import type { Testimonial } from "@/types/database";
 
 interface Props {
   testimonials: Testimonial[];
+  title: string;
+  subtitle: string;
 }
 
-export default function TestimonialsSection({ testimonials }: Props) {
+export default function TestimonialsSection({ testimonials, title, subtitle }: Props) {
   if (!testimonials || testimonials.length === 0) return null;
 
   return (
@@ -12,10 +14,10 @@ export default function TestimonialsSection({ testimonials }: Props) {
       <div className="max-w-[1400px] mx-auto px-4 md:px-12">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
           <h3 className="text-4xl md:text-5xl font-bold text-on-surface" style={{ fontFamily: "var(--font-display)" }}>
-            ماذا يقول عملاؤنا
+            {title}
           </h3>
           <p className="text-lg text-on-secondary-container">
-            نعتز بثقتكم ونسعى دائماً لتقديم أفضل تجربة تسوق ممكنة
+            {subtitle}
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
@@ -25,13 +27,13 @@ export default function TestimonialsSection({ testimonials }: Props) {
               className="bg-surface-container-lowest p-8 rounded-[24px] shadow-sm border border-outline-variant/10 relative animate-fade-in"
               style={{ animationDelay: `${i * 0.15}s` }}
             >
-              <div className="absolute -top-6 right-8 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center text-3xl font-serif">"</div>
+              <div className="absolute -top-6 right-8 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center text-3xl font-serif">&quot;</div>
               <div className="flex text-[#FFB800] mb-4">
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <span key={j} className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                 ))}
               </div>
-              <p className="text-lg italic mb-8 text-on-surface">"{t.review}"</p>
+              <p className="text-lg italic mb-8 text-on-surface">&quot;{t.review}&quot;</p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary text-lg">
                   {t.name.charAt(0)}
