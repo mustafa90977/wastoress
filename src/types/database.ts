@@ -22,3 +22,26 @@ export interface Order {
   payment_link: string | null;
   created_at: string;
 }
+
+export interface StoreSetting {
+  key: string;
+  value: string;
+  updated_at: string;
+}
+
+export interface Category {
+  name: string;
+  icon: string;
+}
+
+export interface TrustBadge {
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+export interface Testimonial {
+  name: string;
+  review: string;
+  rating: number;
+}
