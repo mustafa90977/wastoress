@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Package, ShoppingBag, Settings } from "lucide-react";
+import { LogOut, Package, ShoppingBag, Settings, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -9,6 +9,8 @@ export default function AdminHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+
+  if (pathname === "/admin/login") return null;
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -28,6 +30,10 @@ export default function AdminHeader() {
         <div className="flex items-center gap-6">
           <Link href="/admin/products" className="text-lg font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>
             لوحة التحكم
+          </Link>
+          <Link href="/" className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100 transition">
+            <ExternalLink className="h-3.5 w-3.5" />
+            عرض المتجر
           </Link>
           <nav className="flex gap-2">
             {navItems.map((item) => {
